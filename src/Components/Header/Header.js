@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './Header.css';
+import Axios from 'axios';
 
 export default class Header extends Component {
   constructor() {
@@ -28,15 +29,38 @@ export default class Header extends Component {
   }
 
   login() {
+    let {username, password} = this.state;
+    Axios.post('auth/login', {username, password})
+      .then(response => {this.setState({username: '', password: ''})
+      this.props.updateUser(response.data)
+    })
+    .catch(err => {
+      this.setState({username: '', password: ''})
+      alert(err.response.request.response)
+    })
     // axios POST to /auth/login here
   }
 
   register() {
+    let {username, password, isAdmin} = this.state;
     // axios POST to /auth/register here
+    Axios.post('auth/register', {username, password, isAdmin})
+      .then(response => {this.setState({username: '', password: ''});
+        this.props.updateUser(response.data)
+      })
+      .catch(err => {
+        this.setState({username: '', password: ''})
+        alert(err.response.request.response)
+      })
   }
 
   logout() {
     // axios GET to /auth/logout here
+    Axios.get('auth/logout')
+      .then(() => {
+        this.props.updateUser({});
+      })
+      .catch(err => console.log(err));
   }
 
   render() {
